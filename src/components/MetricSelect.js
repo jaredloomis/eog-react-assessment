@@ -20,9 +20,10 @@ export default props =>
   </Provider>;
 
 const MetricSelect = props => {
-  const { selectedMetricChart } = useSelector(state => ({
-    selectedMetricChart: state.metrics.selectedMetricChart
+  const { selectedMetrics } = useSelector(state => ({
+    selectedMetrics: state.metrics.selectedMetrics
   }));
+  console.log("metrics:", selectedMetrics);
   const dispatch = useDispatch();
 
   // Query for available metrics
@@ -50,7 +51,7 @@ const MetricSelect = props => {
     } else {
       dispatch({
         type: actions.METRIC_CHART_SELECTED,
-        metricID: event.target.value
+        metrics: event.target.value
       });
     }
   }
@@ -64,7 +65,8 @@ const MetricSelect = props => {
         <Select
           labelId="active-metric"
           id="active-metric-select"
-          value={selectedMetricChart}
+          value={selectedMetrics}
+          multiple
           onChange={changeHandler}
         >
           {metrics.map(metric =>
