@@ -14,21 +14,22 @@ const client = createClient({
   url: "https://react.eogresources.com/graphql"
 });
 
-export default props =>
+const MetricSelect = props =>
   <Provider value={client}>
-    <MetricSelect {...props}/>
+    <MetricSelectComponent {...props}/>
   </Provider>;
 
-const MetricSelect = props => {
+const MetricSelectComponent = props => {
+  // Currently selected metrics from Redux
   const { selectedMetrics } = useSelector(state => ({
     selectedMetrics: state.metrics.selectedMetrics
   }));
-  console.log("metrics:", selectedMetrics);
-  const dispatch = useDispatch();
 
   // Query for available metrics
   const [result] = useQuery({ query });
   const { fetching, data, error } = result;
+
+  const dispatch = useDispatch();
 
   // Route incoming data or errors to redux
   useEffect(
@@ -63,7 +64,6 @@ const MetricSelect = props => {
     <div>
       <InputLabel id="active-metric">Metric</InputLabel>
         <Select
-          labelId="active-metric"
           id="active-metric-select"
           value={selectedMetrics}
           multiple
@@ -76,3 +76,5 @@ const MetricSelect = props => {
     </div>
   );
 };
+
+export default MetricSelect;
