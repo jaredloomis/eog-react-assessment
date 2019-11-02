@@ -1,12 +1,11 @@
-import React,
-  { useState, useEffect }  from "react";
-import { useSelector }     from "react-redux";
-import { useQuery }        from "urql";
-import Grid                from "@material-ui/core/Grid";
-import MetricSelect        from "./MetricSelect";
-import CurrentMetricData   from "./CurrentMetricData";
-import MetricGraph         from "./MetricGraph";
-import { gqlClient }       from "../store/api"
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useQuery } from "urql";
+import Grid from "@material-ui/core/Grid";
+import MetricSelect from "./MetricSelect";
+import CurrentMetricData from "./CurrentMetricData";
+import MetricGraph from "./MetricGraph";
+import { gqlClient } from "../store/api";
 
 const measurementsQuery = `
   query measurements($input: MeasurementQuery) {
@@ -24,19 +23,19 @@ const Metrics = props => {
   }));
 
   // Set start time
-  if(!startTime) {
+  if (!startTime) {
     setStartTime(new Date().getTime());
   }
 
   // Most recently selected metric's graph is displayed
-  const primaryMetric = selectedMetrics[selectedMetrics.length-1];
+  const primaryMetric = selectedMetrics[selectedMetrics.length - 1];
 
   const [initRes, executeInitQuery] = useQuery({
     query: measurementsQuery,
     variables: {
       input: {
         metricName: primaryMetric,
-        after: startTime - 1*60*1000,
+        after: startTime - 1 * 60 * 1000,
         before: new Date().getTime()
       }
     },
@@ -57,15 +56,15 @@ const Metrics = props => {
 
   return (
     <div>
-      <MetricSelect/>
+      <MetricSelect />
       <Grid container spacing={2}>
-        {selectedMetrics.map(metric =>
+        {selectedMetrics.map(metric => (
           <Grid item key={metric}>
-            <CurrentMetricData metric={metric}/>
+            <CurrentMetricData metric={metric} />
           </Grid>
-        )}
+        ))}
       </Grid>
-        {initMeasurements && <MetricGraph measurements={initMeasurements}/>}
+      {initMeasurements && <MetricGraph measurements={initMeasurements} />}
     </div>
   );
 };

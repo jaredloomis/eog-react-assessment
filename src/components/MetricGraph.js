@@ -1,16 +1,20 @@
 import React, { useState } from "react";
 import {
-  LineChart, Line, XAxis,
-  YAxis, CartesianGrid,
-  Tooltip, Legend
-}                          from "recharts";
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend
+} from "recharts";
 
 const MetricGraph = ({ measurements }) => {
   const data = createGraphData(measurements);
 
   return (
-    <LineChart width={400} height={400} data={data}>
-      <Line dataKey="value"/>
+    <LineChart width={800} height={800} data={data}>
+      <Line dataKey="value" />
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="name" />
       <YAxis />
@@ -22,9 +26,9 @@ const MetricGraph = ({ measurements }) => {
 
 function createGraphData(measurements) {
   return measurements.map(meas => ({
-    name: new Date(meas.at).toLocaleString(),
+    name: new Date(meas.at).toLocaleTimeString(),
     value: meas.value
-  }))
+  }));
 }
 
 export default MetricGraph;
