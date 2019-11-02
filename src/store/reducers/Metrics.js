@@ -26,8 +26,7 @@ function measurementsReceived(state, event) {
 
 const handlers = {
   [actions.METRIC_CHART_SELECTED]: metricChartSelected,
-  [actions.METRIC_LIST_RECEIVED]: metricListReceived,
-  [actions.MEASUREMENTS_RECEIVED]: measurementsReceived
+  [actions.METRIC_LIST_RECEIVED]: metricListReceived
 };
 
 export default (state = initialState, action) => {

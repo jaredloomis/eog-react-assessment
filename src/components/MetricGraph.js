@@ -1,26 +1,30 @@
-import React             from "react";
-import Grid              from "@material-ui/core/Grid";
-import MetricSelect      from "./MetricSelect";
-import MetricGraph       from "./MetricGraph";
-import CurrentMetricData from "./CurrentMetricData";
-import { useSelector }   from "react-redux";
+import React, { useState } from "react";
+import {
+  LineChart, Line, XAxis,
+  YAxis, CartesianGrid,
+  Tooltip, Legend
+}                          from "recharts";
 
-export default () => {
-  const { selectedMetrics } = useSelector(state => ({
-    selectedMetrics: state.metrics.selectedMetrics
-  }));
+const MetricGraph = ({ measurements }) => {
+  const data = createGraphData(measurements);
 
   return (
-    <div>
-      <MetricSelect/>
-      <Grid container spacing={2}>
-        {selectedMetrics.map(metric =>
-          <Grid item key={metric}>
-            <CurrentMetricData metric={metric}/>
-          </Grid>
-        )}
-      </Grid>
-      <MetricGraph metric={selectedMetrics[selectedMetrics.length-1]}/>
-    </div>
+    <LineChart width={400} height={400} data={data}>
+      <Line dataKey="value"/>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="name" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+    </LineChart>
   );
 };
+
+function createGraphData(measurements) {
+  return measurements.map(meas => ({
+    name: new Date(meas.at).toLocaleString(),
+    value: meas.value
+  }))
+}
+
+export default MetricGraph;
