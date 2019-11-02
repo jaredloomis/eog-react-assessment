@@ -17,7 +17,6 @@ const measurementsQuery = `
 
 const Metrics = props => {
   const [startTime, setStartTime] = useState(0);
-  //const [measurements, setMeasurements] = useState(0);
   const { selectedMetrics } = useSelector(state => ({
     selectedMetrics: state.metrics.selectedMetrics
   }));
