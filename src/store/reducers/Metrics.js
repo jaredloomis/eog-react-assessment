@@ -16,17 +16,36 @@ function metricListReceived(state, event) {
 }
 
 function measurementsReceived(state, event) {
+  const curMeasurements = state.measurements || [];
+  const {metric} = event;
+  const newMeasurements = event.measurements;
   return {
     ...state,
     measurements: {
-      [event.metric]: (state[event.metric] || []).concat(event.measurements)
+      ...state.measurements,
+      [metric]: (curMeasurements[metric] || []).concat(newMeasurements)
+    }
+  };
+}
+
+function measurementReceived(state, event) {
+  const curMeasurements = state.measurements || [];
+  const {metric} = event.measurement;
+  const newMeasurement = event.measurement;
+  return {
+    ...state,
+    measurements: {
+      ...curMeasurements,
+      [metric]: (curMeasurements[metric] || []).concat([newMeasurement])
     }
   };
 }
 
 const handlers = {
   [actions.METRIC_CHART_SELECTED]: metricChartSelected,
-  [actions.METRIC_LIST_RECEIVED]: metricListReceived
+  [actions.METRIC_LIST_RECEIVED]: metricListReceived,
+  [actions.MEASUREMENTS_RECEIVED]: measurementsReceived,
+  [actions.MEASUREMENT_RECEIVED]: measurementReceived
 };
 
 export default (state = initialState, action) => {

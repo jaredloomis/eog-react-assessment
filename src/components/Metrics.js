@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useQuery } from "urql";
-import Grid from "@material-ui/core/Grid";
-import MetricSelect from "./MetricSelect";
-import CurrentMetricData from "./CurrentMetricData";
-import MetricGraph from "./MetricGraph";
-import { gqlClient } from "../store/api";
+import React, { useState } from "react";
+import { useSelector }     from "react-redux";
+import Grid                from "@material-ui/core/Grid";
+import MetricSelect        from "./MetricSelect";
+import CurrentMetricData   from "./CurrentMetricData";
+import MetricGraph         from "./MetricGraph";
+import { gqlClient }       from "../store/api";
 
 const measurementsQuery = `
   query measurements($input: MeasurementQuery) {
@@ -18,8 +17,9 @@ const measurementsQuery = `
 const Metrics = props => {
   const [startTime, setStartTime] = useState(0);
   //const [measurements, setMeasurements] = useState(0);
-  const { selectedMetrics } = useSelector(state => ({
-    selectedMetrics: state.metrics.selectedMetrics
+  const { selectedMetrics, measurements } = useSelector(state => ({
+    selectedMetrics: state.metrics.selectedMetrics,
+    measurements: state.metrics.measurements
   }));
 
   // Set start time
@@ -30,29 +30,13 @@ const Metrics = props => {
   // Most recently selected metric's graph is displayed
   const primaryMetric = selectedMetrics[selectedMetrics.length - 1];
 
-  const [initRes, executeInitQuery] = useQuery({
-    query: measurementsQuery,
-    variables: {
-      input: {
-        metricName: primaryMetric,
-        after: startTime - 1 * 60 * 1000,
-        before: new Date().getTime()
-      }
-    },
-    context: gqlClient
-  });
+  const initMeasurements = measurements && measurements[primaryMetric];
 
-  const initMeasurements = initRes.data && initRes.data.getMeasurements;
-
-  /*
-  const updateData = () => {
-
-  };
-
-  useEffect(() => {
-    const interval = setInterval(updateData, 1300);
-    return () => clearInterval(interval);
-  }, []);*/
+  // Create a slice of measurements including only selected metrics.
+  const selectedMeasurements = {};
+  for(const metric of selectedMetrics) {
+    selectedMeasurements[metric] = measurements[metric];
+  }
 
   return (
     <div>
@@ -64,7 +48,7 @@ const Metrics = props => {
           </Grid>
         ))}
       </Grid>
-      {initMeasurements && <MetricGraph measurements={initMeasurements} />}
+        {initMeasurements && <MetricGraph metricMeasurements={selectedMeasurements} />}
     </div>
   );
 };
