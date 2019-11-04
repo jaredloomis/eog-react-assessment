@@ -1,21 +1,16 @@
-import React, { useEffect, useState, useRef } from "react";
+import React from "react";
+import { useSelector } from "react-redux";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
-import { Query, Provider } from "urql";
+import { Provider } from "urql";
 import { gqlClient } from "../store/api";
 
-const updateInterval = 1300;
-
-const currentDataQuery = `query lastKnownMeasurement($metric: String!) {
-    getLastKnownMeasurement(metricName: $metric) {
-      metric
-      at
-      value
-      unit
-    }
-  }`;
-
 export default ({ metric }) => {
+  const { measurements } = useSelector(state => ({
+    measurements: state.metrics.measurements[metric]
+  }));
+  const measurement = measurements && measurements[measurements.length - 1];
+
   return (
     <Provider value={gqlClient}>
       <Paper>
@@ -23,24 +18,7 @@ export default ({ metric }) => {
           {metric}
         </Typography>
         <Typography component="p">
-          <Query
-            query={currentDataQuery}
-            variables={{ metric }}
-            pollInterval={updateInterval}
-            requestPolicy="network-only"
-          >
-            {({ fetching, data, error, extensions }) => {
-              if (fetching) {
-                return "Loading...";
-              } else if (error) {
-                return "Oh no!";
-              }
-
-              const measurement = data.getLastKnownMeasurement;
-
-              return `${measurement.value} ${measurement.unit}`;
-            }}
-          </Query>
+          {measurement.value} {measurement.unit}
         </Typography>
       </Paper>
     </Provider>

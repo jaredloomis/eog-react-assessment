@@ -12,21 +12,37 @@ function metricChartSelected(state, event) {
 }
 
 function metricListReceived(state, event) {
-  return state;
+  return {
+    ...state,
+    availableMetrics: event.metrics
+  };
 }
 
 function measurementsReceived(state, event) {
+  const rawMeasurements = event.measurements || [event.measurement];
+  if (!rawMeasurements || rawMeasurements.length === 0) {
+    return state;
+  }
+
+  const measurements = rawMeasurements.reduce((acc, meas) => {
+    const { metric } = meas;
+    return {
+      ...acc,
+      [metric]: (acc[metric] || []).concat([meas])
+    };
+  }, state.measurements || {});
+
   return {
     ...state,
-    measurements: {
-      [event.metric]: (state[event.metric] || []).concat(event.measurements)
-    }
+    measurements
   };
 }
 
 const handlers = {
   [actions.METRIC_CHART_SELECTED]: metricChartSelected,
-  [actions.METRIC_LIST_RECEIVED]: metricListReceived
+  [actions.METRIC_LIST_RECEIVED]: metricListReceived,
+  [actions.MEASUREMENTS_RECEIVED]: measurementsReceived,
+  [actions.MEASUREMENT_RECEIVED]: measurementsReceived
 };
 
 export default (state = initialState, action) => {

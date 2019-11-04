@@ -70,7 +70,9 @@ const Weather = () => {
 
   return (
     <Chip
-      label={`Weather in ${locationName}: ${description} and ${temperatureinFahrenheit}°`}
+      label={`Weather in ${locationName}: ${description} and ${Math.floor(
+        temperatureinFahrenheit
+      )}°`}
     />
   );
 };

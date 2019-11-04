@@ -9,12 +9,18 @@ import {
   Legend
 } from "recharts";
 
-const MetricGraph = ({ measurements }) => {
-  const data = createGraphData(measurements);
+const MetricGraph = ({ metricMeasurements }) => {
+  const data = createGraphData(metricMeasurements);
 
   return (
     <LineChart width={800} height={800} data={data}>
-      <Line dataKey="value" />
+      {Object.keys(metricMeasurements).map(metricName => (
+        <Line
+          key={metricName}
+          dataKey={metricName}
+          stroke={randomHexColor(metricName)}
+        />
+      ))}
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="name" />
       <YAxis />
@@ -24,11 +30,45 @@ const MetricGraph = ({ measurements }) => {
   );
 };
 
-function createGraphData(measurements) {
-  return measurements.map(meas => ({
-    name: new Date(meas.at).toLocaleTimeString(),
-    value: meas.value
-  }));
+/**
+ * Transform metricMeasurements of the form
+ * > {[metricName]: Array<Measurement>}
+ * to something digestible by a line graph
+ * > [{[metric1]: value1, [metric2]: value2, name: dateStr}, ...]
+ */
+function createGraphData(metricMeasurements = {}) {
+  const metricNames = Object.keys(metricMeasurements);
+
+  const maxLength = metricNames.reduce(
+    (curMax, metricName) =>
+      Math.max(curMax, metricMeasurements[metricName].length),
+    0
+  );
+
+  const data = [];
+  for (let i = 0; i < maxLength; ++i) {
+    // Combine the i'th element of every sampled metric,
+    // to allow for line chart rendering.
+    const sample = {};
+    metricNames.forEach(metricName => {
+      const measurement = metricMeasurements[metricName][i];
+      if (measurement) {
+        sample.name = new Date(measurement.at).toLocaleTimeString();
+        sample[metricName] = measurement.value;
+      }
+    });
+    data.push(sample);
+  }
+
+  return data;
+}
+
+const colorCache = {};
+function randomHexColor(seed) {
+  if (colorCache[seed]) return colorCache[seed];
+  const color = "#" + Math.floor(Math.random() * 0xffffff).toString(16);
+  colorCache[seed] = color;
+  return color;
 }
 
 export default MetricGraph;
