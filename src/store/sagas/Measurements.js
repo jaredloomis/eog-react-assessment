@@ -1,14 +1,24 @@
-import { takeEvery, call } from "redux-saga/effects";
-import * as actions        from "../actions";
-import { toast }           from "react-toastify";
-import Api                 from "../api";
+import {
+  takeEvery, call, put
+}                       from "redux-saga/effects";
+import * as actions     from "../actions";
+import Api              from "../api";
+import {createPlotDataMultiple} from "../createPlotData";
 
-function* apiErrorReceived(action) {
-  yield call(toast.error, `Error Received: ${action.error}`);
+function* fetchMeasurements(action) {
+  const measurements = yield (yield call(Api.fetchMeasurements, action.queries));
+  console.log(measurements);
+  if(measurements) {
+    yield put({
+      type: actions.MEASUREMENTS_RECEIVED,
+      measurements: measurements.flat().flatMap(meas => meas.measurements),
+      plotData: createPlotDataMultiple(measurements)
+    });
+  }
 }
 
-function* watchApiError() {
-  yield takeEvery(actions.MEASUREMENTS_REQUESTED, apiErrorReceived);
+function* watchMeasurements() {
+  yield takeEvery(actions.MEASUREMENTS_REQUESTED, fetchMeasurements);
 }
 
-export default [watchApiError];
+export default [watchMeasurements];

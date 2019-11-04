@@ -38,7 +38,7 @@ const MetricSelectComponent = props => {
     }
     if (!data) return;
     const { getMetrics } = data;
-    dispatch({ type: actions.METRIC_LIST_RECEIVED, getMetrics });
+    dispatch({ type: actions.METRIC_LIST_RECEIVED, metrics: getMetrics });
   }, [dispatch, data, error]);
 
   // Respond to selection changes

@@ -1,3 +1,4 @@
-import ApiErrors from "./ApiErrors";
+import ApiErrors    from "./ApiErrors";
+import Measurements from "./Measurements";
 
-export default [...ApiErrors];
+export default [...ApiErrors, ...Measurements];

@@ -12,40 +12,37 @@ function metricChartSelected(state, event) {
 }
 
 function metricListReceived(state, event) {
-  return state;
-}
-
-function measurementsReceived(state, event) {
-  const curMeasurements = state.measurements || [];
-  const {metric} = event;
-  const newMeasurements = event.measurements;
   return {
     ...state,
-    measurements: {
-      ...state.measurements,
-      [metric]: (curMeasurements[metric] || []).concat(newMeasurements)
-    }
+    availableMetrics: event.metrics
   };
 }
 
-function measurementReceived(state, event) {
-  const curMeasurements = state.measurements || [];
-  const {metric} = event.measurement;
-  const newMeasurement = event.measurement;
+function measurementsReceived(state, event) {
+  const rawMeasurements = event.measurements || [event.measurement];
+  if(!rawMeasurements || rawMeasurements.length === 0) {
+    return state;
+  }
+
+  const measurements = rawMeasurements.reduce((acc, meas) => {
+    const {metric} = meas
+    return {
+      ...acc,
+      [metric]: (acc[metric] || []).concat([meas])
+    };
+  }, state.measurements || {});
+
   return {
     ...state,
-    measurements: {
-      ...curMeasurements,
-      [metric]: (curMeasurements[metric] || []).concat([newMeasurement])
-    }
+    measurements
   };
 }
 
 const handlers = {
   [actions.METRIC_CHART_SELECTED]: metricChartSelected,
-  [actions.METRIC_LIST_RECEIVED]: metricListReceived,
+  [actions.METRIC_LIST_RECEIVED]:  metricListReceived,
   [actions.MEASUREMENTS_RECEIVED]: measurementsReceived,
-  [actions.MEASUREMENT_RECEIVED]: measurementReceived
+  [actions.MEASUREMENT_RECEIVED]:  measurementsReceived
 };
 
 export default (state = initialState, action) => {

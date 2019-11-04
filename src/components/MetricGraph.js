@@ -15,7 +15,7 @@ const MetricGraph = ({ metricMeasurements }) => {
   return (
     <LineChart width={800} height={800} data={data}>
       {Object.keys(metricMeasurements).map(metricName =>
-        <Line key={metricName} dataKey={metricName} />
+        <Line key={metricName} dataKey={metricName} stroke={randomHexColor(metricName)} />
       )}
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="name" />
@@ -60,8 +60,10 @@ function createGraphData(metricMeasurements={}) {
 
 const colorCache = {};
 function randomHexColor(seed) {
-  return colorCache[seed] ||
-    "#"+Math.floor(Math.random()*0xFFFFFF).toString(16);
+  if(colorCache[seed]) return colorCache[seed];
+  const color = "#"+Math.floor(Math.random()*0xFFFFFF).toString(16);
+  colorCache[seed] = color;
+  return color;
 }
 
 export default MetricGraph;
